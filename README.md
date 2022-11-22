@@ -19,8 +19,6 @@ Crontab 如果写成以下命令:
 go run cron.go KiAqICogKiAqICEhIGNkIGQ6XFwgJiBlY2hvICV0aW1lJSA+PiB0bXAudHh0ICMg5YaZ5YWl5rWL6K+V
 ```
 
-带入后, 参数被解析为: * * * * * !! cd d:\\ & echo %time% >> tmp.txt # 写入测试
+带入后, 参数被解析为: * * * * * !! cd d:\\\\ & echo %time% >> tmp.txt # 写入测试
 
-#可以作为注释内容
-
-...
+\# 可以作为注释内容
