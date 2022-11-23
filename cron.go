@@ -55,7 +55,7 @@ func RunCmd(path string, cmd string) (msg string, err error) {
 	if runtime.GOOS == "windows" {
 		return RunProc(path, "cmd", "/c", cmd)
 	} else if runtime.GOOS == "linux" {
-		return RunProc(path, "bash", cmd)
+		return RunProc(path, cmd)
 	} else if runtime.GOOS == "darwin" {
 		return RunProc(path, "zsh", cmd)
 	} else {
@@ -78,7 +78,6 @@ func RunProc(path, name string, arg ...string) (msg string, err error) {
 		err = errors.New(msg)
 	}
 	out_str := ConvertByte2String(out.Bytes(), GB18030)
-	fmt.Println("run:", cmd.Args, "\n", out_str)
 	return out_str, err
 }
 
@@ -89,22 +88,27 @@ func main() {
 	c := cron.New()
 	zp := regexp.MustCompile(`(?mi)(^[^#\r\n]+)`)
 	lines := zp.FindAllString(Base64Decode(os.Args[1]), -1)
+	fmt.Println("################# 解析结果 #################")
 	for _, line := range lines {
-		cmd := strings.Split(line, "!!")
-		if len(cmd) != 2 {
+		cmdArray := strings.Split(line, "!!")
+		if len(cmdArray) != 2 {
 			return
 		}
-		fmt.Println(cmd[0], cmd[1])
-		c.AddFunc(cmd[0], func() {
-			rst, err := RunCmd(".", cmd[1])
+		freq := strings.TrimSpace(cmdArray[0])
+		cmd := strings.TrimSpace(cmdArray[1])
+		fmt.Println(freq, cmd)
+		c.AddFunc(freq, func() {
+			fmt.Println("\n\nrun >>", "[", cmd, "]")
+			rst, err := RunCmd(".", cmd)
 			if len(rst) > 0 {
-				fmt.Println(rst)
+				fmt.Println("=============== ret ===============\n", strings.TrimSpace(rst))
 			}
 			if err != nil {
-				fmt.Println(err)
+				fmt.Println("=============== err ===============\n", err)
 			}
 		})
 	}
+	fmt.Println("############################################")
 	c.Start()
 	select {}
 }
